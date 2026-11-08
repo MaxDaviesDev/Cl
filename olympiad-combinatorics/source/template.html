@@ -1,0 +1,79 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Olympiad Combinatorics: Learn and Practise</title>
+<link rel="stylesheet" href="node_modules/katex/dist/katex.min.css">
+<script src="node_modules/katex/dist/katex.min.js"></script>
+<script src="node_modules/katex/dist/contrib/auto-render.min.js"></script>
+<style>
+@page { size: A4; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: KaTeX_Main, "DejaVu Serif", serif; font-size: 10.6pt; line-height: 1.45; color: #1f2933; margin: 0; }
+h1, h2, h3, .qhead, .boxhead, .title, .tag, .cap, .toc { font-family: Inter, "DejaVu Sans", sans-serif; }
+h1 { font-size: 19pt; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.01em; }
+h1 .secnum { display: inline-block; min-width: 1.4em; color: #2563a8; }
+h2 { font-size: 13pt; font-weight: 650; margin: 18px 0 6px; color: #1f2933; border-bottom: 1.5px solid #d5dbe2; padding-bottom: 2px; break-after: avoid; }
+h3 { font-size: 11pt; font-weight: 650; margin: 12px 0 4px; break-after: avoid; }
+p { margin: 5px 0 7px; text-align: justify; hyphens: auto; }
+ul, ol { margin: 4px 0 8px; padding-left: 22px; }
+li { margin: 2px 0; }
+.secintro { font-size: 11pt; color: #3b4652; margin: 4px 0 12px; font-style: italic; }
+section.teach { break-before: page; }
+.box { border: 1.2px solid var(--c); border-radius: 5px; margin: 11px 0; background: var(--bg); break-inside: avoid; overflow: hidden; }
+.box .boxhead { background: var(--c); color: #fff; font-weight: 600; font-size: 9.6pt; padding: 3px 10px; }
+.box .boxbody { padding: 6px 12px 7px; }
+.box .boxbody > p:first-child { margin-top: 2px; }
+.theorem { --c: #8a5a0b; --bg: #fbf7ee; }
+.method  { --c: #2d5aa0; --bg: #f2f6fc; }
+.trap    { --c: #a83232; --bg: #fdf3f3; }
+.example { --c: #2f7a4a; --bg: #f5fbf6; }
+.why     { --c: #6b4fa0; --bg: #f7f4fb; }
+.check   { --c: #1d7480; --bg: #f1f9fa; }
+.practise{ --c: #39424d; --bg: #f6f7f9; }
+.example .extitle { font-weight: 400; opacity: .95; }
+.example .problem { font-style: normal; border-left: 3px solid #2f7a4a; padding: 2px 0 2px 9px; margin: 3px 0 6px; background: #e8f4ec; }
+.example .exsol p:first-child { margin-top: 0; }
+.checkans { margin-top: 8px; text-align: center; color: #5f6b77; font-size: 9pt; }
+.checkans span { display: inline-block; transform: rotate(180deg); }
+.qlist { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; margin-top: 6px; }
+.tag { color: #7a8591; font-size: 8.8pt; font-weight: 500; }
+.fig { text-align: center; margin: 8px 0; break-inside: avoid; }
+.fig svg { display: inline-block; }
+.cap { font-size: 8.6pt; color: #5f6b77; margin-top: 2px; }
+.figrow { display: flex; justify-content: center; align-items: flex-end; gap: 26px; flex-wrap: wrap; break-inside: avoid; }
+.mono { font-family: "DejaVu Sans Mono", monospace; letter-spacing: 0.08em; }
+table.t { border-collapse: collapse; margin: 6px auto; font-size: 10pt; }
+table.t td, table.t th { border: 1px solid #c3cad2; padding: 2px 8px; text-align: center; }
+table.t th { background: #eef1f4; font-family: Inter, sans-serif; font-weight: 600; font-size: 9pt; }
+.P { background: #fde2e2; font-weight: 700; }
+.qpage { break-before: page; height: 255mm; position: relative; }
+.spage { break-before: page; }
+.qhead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.5px solid #2563a8; padding-bottom: 3px; margin-bottom: 10px; }
+.qnum { font-size: 14pt; font-weight: 700; }
+.stmt { border: 1.2px solid #5d6670; border-radius: 4px; padding: 8px 12px; background: #fff; }
+.stmt.small { font-size: 9.6pt; color: #3b4652; background: #f7f8fa; border-color: #c3cad2; }
+.hint { position: absolute; left: 0; right: 0; bottom: 4mm; text-align: center; color: #7d8792; font-size: 9.4pt; transform: rotate(180deg); padding: 0 10mm; }
+.key { background: #eef3fb; border: 1px solid #b9cbe6; border-radius: 4px; padding: 6px 11px; margin: 10px 0; }
+.sol p:first-child { margin-top: 4px; }
+.answer { border: 1.6px solid #1f2933; padding: 5px 11px; margin-top: 10px; break-inside: avoid; }
+.qed { float: right; }
+.cover { height: 255mm; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+.cover .title { font-size: 34pt; font-weight: 800; letter-spacing: -0.02em; }
+.cover .sub { font-family: Inter, sans-serif; font-size: 14pt; color: #4a5561; margin-top: 6px; }
+.cover .meta { font-family: Inter, sans-serif; font-size: 10.5pt; color: #6a7580; margin-top: 18px; }
+.front { break-before: page; }
+.toc { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin-top: 6px; }
+.toc td { padding: 4px 4px; border-bottom: 1px solid #e3e7ec; vertical-align: top; }
+.toc td.n { width: 26px; font-weight: 700; color: #2563a8; }
+.toc td.d { color: #6a7580; font-size: 9.4pt; }
+.toc td.q { color: #6a7580; font-size: 9.4pt; text-align: right; white-space: nowrap; }
+.katex { font-size: 1.04em; }
+.katex-display { margin: 0.55em 0; }
+</style></head>
+<body>
+%%BODY%%
+<script>
+renderMathInElement(document.body, {delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}],
+  throwOnError: true, macros: {"\\N": "\\mathbb{N}", "\\Z": "\\mathbb{Z}"}});
+document.fonts.ready.then(() => { window.__done = true; });
+</script>
+</body></html>
