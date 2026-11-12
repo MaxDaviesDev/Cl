@@ -1,0 +1,8 @@
+{
+  "appId": "com.example.orbithop",
+  "appName": "Orbit Hop",
+  "webDir": "www",
+  "backgroundColor": "#070818",
+  "android": { "backgroundColor": "#070818" },
+  "ios": { "backgroundColor": "#070818", "contentInset": "never" }
+}

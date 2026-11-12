@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#070818" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Orbit Hop</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- In-game HUD -->
+  <div id="hud" class="hidden">
+    <div id="score">0</div>
+    <div id="hudCoins"><span class="coin-ic"></span><span id="hudCoinCount">0</span></div>
+    <div id="combo"></div>
+  </div>
+  <div id="tapHint" class="hidden">TAP TO LAUNCH</div>
+
+  <!-- Main menu -->
+  <section id="menu" class="screen">
+    <div class="top-row">
+      <button id="soundBtn" class="icon-btn" aria-label="Toggle sound">🔊</button>
+      <div class="wallet"><span class="coin-ic"></span><span id="menuCoins">0</span></div>
+    </div>
+    <h1 class="logo">ORBIT<br /><span>HOP</span></h1>
+    <p class="best">BEST <b id="menuBest">0</b></p>
+    <button id="playBtn" class="big-btn pulse">▶ PLAY</button>
+    <div class="row">
+      <button id="shopBtn" class="btn">🎨 Skins</button>
+      <button id="dailyBtn" class="btn gift" hidden>🎁 Daily gift</button>
+    </div>
+    <p class="howto">Tap to fly off your orbit.<br />Catch the next planet. Aim for the centre for <b>PERFECT</b> combos.</p>
+  </section>
+
+  <!-- Game over -->
+  <section id="over" class="screen hidden">
+    <p class="over-title">GAME OVER</p>
+    <div class="over-score" id="overScore">0</div>
+    <p id="newBest" class="new-best hidden">★ NEW BEST ★</p>
+    <p class="best">BEST <b id="overBest">0</b></p>
+    <p class="earned">+<b id="overCoins">0</b> <span class="coin-ic"></span></p>
+    <button id="continueBtn" class="big-btn ad-btn">▶ Continue <small>watch ad</small></button>
+    <button id="doubleBtn" class="btn ad-btn">2× coins <small>watch ad</small></button>
+    <div class="row">
+      <button id="retryBtn" class="big-btn">↻ Retry</button>
+    </div>
+    <button id="homeBtn" class="link-btn">Menu</button>
+  </section>
+
+  <!-- Shop -->
+  <section id="shop" class="screen hidden">
+    <div class="top-row">
+      <button id="shopBack" class="icon-btn" aria-label="Back">←</button>
+      <div class="wallet"><span class="coin-ic"></span><span id="shopCoins">0</span></div>
+    </div>
+    <h2>Skins</h2>
+    <div id="skinGrid" class="grid"></div>
+    <button id="freeCoinsBtn" class="btn ad-btn">+40 coins <small>watch ad</small></button>
+  </section>
+
+  <!-- Daily reward -->
+  <section id="daily" class="screen hidden">
+    <h2>Daily gift</h2>
+    <p class="streak">Day <b id="streakDay">1</b> streak</p>
+    <div class="gift-amount">+<b id="dailyAmount">25</b> <span class="coin-ic big"></span></div>
+    <button id="dailyTriple" class="big-btn ad-btn">Claim ×3 <small>watch ad</small></button>
+    <button id="dailyClaim" class="btn">Claim</button>
+    <p class="hint">Come back tomorrow to grow your streak (up to 7 days).</p>
+  </section>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Ad containers -->
+  <div id="webBanner" class="web-banner" hidden></div>
+  <div id="mockBanner" class="mock-banner" hidden>TEST BANNER AD · 320×50</div>
+  <div id="mockAd" class="mock-ad" hidden>
+    <div class="mock-box">
+      <div class="mock-label">Test ad</div>
+      <p>This is where a Google ad would appear.</p>
+      <button>Close</button>
+    </div>
+  </div>
+
+  <script src="ads-config.js"></script>
+  <script src="ads.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

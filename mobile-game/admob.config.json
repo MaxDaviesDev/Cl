@@ -1,0 +1,6 @@
+{
+  "_comment": "AdMob APP ids (note the ~). These are Google's test app ids — replace with your own from admob.google.com before release.",
+  "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+  "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+  "iosTrackingMessage": "This lets us show you more relevant ads, which keeps Orbit Hop free."
+}
