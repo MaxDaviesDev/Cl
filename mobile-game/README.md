@@ -12,6 +12,7 @@ You orbit a planet. **Tap** to fly off in a straight line and land on the next p
 | PERFECT combos | Flying close to a planet's centre builds a combo multiplier, with rising sound pitch and screen bursts |
 | Skips | Land on a planet further up to earn bonus points |
 | Rising difficulty | Orbits get smaller and faster, and planets start moving |
+| 7 zones to discover | The world changes as you climb: **Sunset Skies → Aurora Heights → Low Orbit → Neon Nebula → Spiral Galaxy → Event Horizon → Hyperspace**. Each new zone shows a banner, and discovering one for the first time pays bonus coins. The menu shows your furthest zone |
 | Coins + 9 skins | Every run earns something to spend in the shop |
 | Daily gift | A login streak (up to 7 days) pays out more each day |
 | Best score | "NEW BEST" fanfare when you beat it |
@@ -71,6 +72,7 @@ After changing anything in `www/`, run `npm run sync`.
 
 ```
 www/index.html         screens & ad containers
+www/backgrounds.js     the 7 climbing zones (sky, sun, aurora, Earth, nebula, galaxy, black hole, warp)
 www/game.js            game engine, shop, daily reward, save data (localStorage)
 www/ads.js             AdMob / H5 / mock ad layer
 www/ads-config.js      ad unit ids + pacing   ← edit me

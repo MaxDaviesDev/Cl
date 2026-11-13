@@ -11,7 +11,7 @@
   // ── Persistence ───────────────────────────────────────────
   const SAVE_KEY = 'orbithop.save.v1';
   const save = Object.assign(
-    { best: 0, coins: 0, skin: 'comet', owned: ['comet'], lastDaily: null, streak: 0, games: 0, sound: true },
+    { best: 0, coins: 0, skin: 'comet', owned: ['comet'], lastDaily: null, streak: 0, bestZone: 0, games: 0, sound: true },
     (() => { try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch (e) { return {}; } })()
   );
   const persist = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} };
@@ -67,16 +67,7 @@
     canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
     canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    makeStars();
-  }
-
-  let stars = [];
-  function makeStars() {
-    stars = [];
-    const n = Math.round((W * H) / 3500);
-    for (let i = 0; i < n; i++) {
-      stars.push({ x: Math.random() * W, y: Math.random() * H, z: rand(0.05, 0.4), s: rand(0.5, 1.8), tw: rand(0, TAU) });
-    }
+    Backdrop.resize(W, H, DPR);
   }
 
   // ── Game state ────────────────────────────────────────────
@@ -90,6 +81,7 @@
   let state = 'menu';          // menu | play | dying | over
   let planets = [], coins = [], particles = [], floaters = [], trail = [];
   let player, camY = 0, score = 0, runCoins = 0, combo = 0, shake = 0, revived = false;
+  let baseCamY = 0, zone = 0, debugAlt = null;
   let hops = 0, planetCount = 0, flyTime = 0, dyingT = 0, time = 0, firstTap = true;
 
   function makePlanet(y, idx) {
@@ -128,11 +120,13 @@
     planets = []; coins = []; particles = []; floaters = []; trail = [];
     score = 0; runCoins = 0; combo = 0; shake = 0; revived = false; hops = 0; planetCount = 0; firstTap = true;
     const first = makePlanet(H * 0.7, planetCount++);
-    first.x = first.baseX = W / 2; first.moving = null; first.spd = 2.0;
+    first.x = first.baseX = W / 2; first.moving = null; first.spd = 1;
     planets.push(first);
     while (planets.length < 8) addPlanet();
     player = { mode: 'orbit', planet: first, angle: -Math.PI / 2, r: first.orbitR, dir: 1, x: 0, y: 0, vx: 0, vy: 0 };
     camY = first.y - H * 0.7;
+    baseCamY = camY;
+    zone = 0;
     updateHud();
   }
 
@@ -195,6 +189,10 @@
       // Camera follows the current planet
       const target = (player.mode === 'orbit' ? player.planet.y : player.y) - H * 0.68;
       if (player.mode === 'orbit' || target < camY) camY = lerp(camY, target, Math.min(1, dt * 3));
+
+      // Entering a new zone?
+      const z = Backdrop.zoneIndex(altitude());
+      if (z > zone) { zone = z; enterZone(z); }
 
       // Spawn / cull
       while (planets.length < 8 || planets[planets.length - 1].y > camY - H) addPlanet();
@@ -267,6 +265,20 @@
     }
   }
 
+  function altitude() { return debugAlt !== null ? debugAlt : baseCamY - camY; }
+
+  function enterZone(z) {
+    const firstTime = z > save.bestZone;
+    const el = $('zoneBanner');
+    $('zoneNum').textContent = `ZONE ${z + 1}`;
+    $('zoneName').textContent = Backdrop.ZONES[z].name;
+    $('zoneBonus').textContent = firstTime ? `NEW ZONE DISCOVERED · +${25 * z} coins` : '';
+    el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+    [523, 659, 784].forEach((f, i) => setTimeout(() => beep(f, 0.25, 'triangle', 0.1), i * 90));
+    vibrate(30);
+    if (firstTime) { save.bestZone = z; runCoins += 25 * z; persist(); updateHud(); }
+  }
+
   function burst(x, y, color, n, speed) {
     for (let i = 0; i < n; i++) {
       const a = rand(0, TAU), v = rand(speed * 0.3, speed);
@@ -281,21 +293,8 @@
   }
 
   function render() {
-    // Background
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    const hueShift = (-camY / 40) % 360;
-    g.addColorStop(0, `hsl(${(235 + hueShift * 0.15) % 360},55%,8%)`);
-    g.addColorStop(1, `hsl(${(260 + hueShift * 0.15) % 360},50%,5%)`);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
-
-    for (const s of stars) {
-      const y = (((s.y - camY * s.z) % H) + H) % H;
-      ctx.globalAlpha = 0.4 + 0.6 * Math.abs(Math.sin(time * 1.5 + s.tw));
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(s.x, y, s.s, s.s);
-    }
-    ctx.globalAlpha = 1;
+    // Background: changes zone as you climb
+    Backdrop.draw(ctx, altitude(), time);
 
     ctx.save();
     const sx = shake ? rand(-shake, shake) : 0, sy = shake ? rand(-shake, shake) : 0;
@@ -488,6 +487,7 @@
   // ── Menu / shop / daily ───────────────────────────────────
   function refreshMenu() {
     $('menuBest').textContent = save.best;
+    $('menuZone').textContent = Backdrop.ZONES[save.bestZone || 0].name;
     $('menuCoins').textContent = save.coins;
     $('soundBtn').textContent = save.sound ? '🔊' : '🔇';
     $('dailyBtn').hidden = save.lastDaily === today();
@@ -591,5 +591,5 @@
   Ads.init().then(() => { if (state === 'menu') { Ads.hideBanner(); Ads.showBanner(); refreshMenu(); } });
 
   // Debug hook for automated tests
-  window.__orbit = { get state() { return state; }, get score() { return score; }, get player() { return player; }, get planets() { return planets; }, tap };
+  window.__orbit = { get state() { return state; }, get score() { return score; }, get player() { return player; }, get planets() { return planets; }, tap, set alt(v) { debugAlt = v; } };
 })();
