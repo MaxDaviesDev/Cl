@@ -27,7 +27,7 @@ const { chromium, devices } = require('playwright');
   const best = await page.evaluate(async () => {
     const g = window.__orbit;
     const t0 = performance.now();
-    while (g.state === 'play' && g.score < 12 && performance.now() - t0 < 25000) {
+    while (g.state === 'play' && g.score < 40 && performance.now() - t0 < 45000) {
       const p = g.player;
       if (p.mode === 'orbit') {
         const next = g.planets.find((q) => q.idx === p.planet.idx + 1);

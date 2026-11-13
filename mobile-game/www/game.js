@@ -82,10 +82,15 @@
   // ── Game state ────────────────────────────────────────────
   const FLY_SPEED = 560;
   const CAPTURE_SCALE = 1.5;     // pickup range as a multiple of the orbit radius
+  // Spin speed ramps up with every planet you land on, then caps.
+  const SPIN_BASE = 2.0;         // radians/second on the first planet
+  const SPIN_MAX = 4.2;          // top speed
+  const SPIN_RAMP_HOPS = 45;     // landings needed to reach top speed
+  const spinSpeed = () => lerp(SPIN_BASE, SPIN_MAX, clamp(hops / SPIN_RAMP_HOPS, 0, 1));
   let state = 'menu';          // menu | play | dying | over
   let planets = [], coins = [], particles = [], floaters = [], trail = [];
   let player, camY = 0, score = 0, runCoins = 0, combo = 0, shake = 0, revived = false;
-  let planetCount = 0, flyTime = 0, dyingT = 0, time = 0, firstTap = true;
+  let hops = 0, planetCount = 0, flyTime = 0, dyingT = 0, time = 0, firstTap = true;
 
   function makePlanet(y, idx) {
     const d = clamp(idx / 60, 0, 1);
@@ -102,7 +107,7 @@
         moving = { amp, freq: rand(0.45, lerp(0.8, 1.3, d)), phase: rand(0, TAU) };
       }
     }
-    const spd = lerp(2.0, 3.5, d) * rand(0.9, 1.12) * (Math.random() < 0.5 ? -1 : 1);
+    const spd = rand(0.92, 1.08) * (Math.random() < 0.5 ? -1 : 1);   // per-planet variation × global spin speed
     return { x, baseX: x, y, r, orbitR, spd, moving, hue: Math.floor(rand(0, 360)), idx, pulse: 0 };
   }
 
@@ -121,7 +126,7 @@
 
   function resetRun() {
     planets = []; coins = []; particles = []; floaters = []; trail = [];
-    score = 0; runCoins = 0; combo = 0; shake = 0; revived = false; planetCount = 0; firstTap = true;
+    score = 0; runCoins = 0; combo = 0; shake = 0; revived = false; hops = 0; planetCount = 0; firstTap = true;
     const first = makePlanet(H * 0.7, planetCount++);
     first.x = first.baseX = W / 2; first.moving = null; first.spd = 2.0;
     planets.push(first);
@@ -156,7 +161,7 @@
     if (state === 'play') {
       if (player.mode === 'orbit') {
         const p = player.planet;
-        player.angle += Math.abs(p.spd) * player.dir * dt;
+        player.angle += spinSpeed() * Math.abs(p.spd) * player.dir * dt;
         player.r = lerp(player.r, p.orbitR, Math.min(1, dt * 6));
         player.x = p.x + Math.cos(player.angle) * player.r;
         player.y = p.y + Math.sin(player.angle) * player.r;
@@ -250,6 +255,13 @@
       }
       if (skipped > 1) floaters.push({ x: p.x, y: p.y + p.orbitR + 20, text: `SKIP +${skipped}`, color: '#7df9ff', t: 0 });
       score += pts;
+      const tierBefore = Math.floor(clamp(hops / SPIN_RAMP_HOPS, 0, 1) * 4);
+      hops += skipped;
+      const tierAfter = Math.floor(clamp(hops / SPIN_RAMP_HOPS, 0, 1) * 4);
+      if (tierAfter > tierBefore) {
+        floaters.push({ x: W / 2, y: camY + H * 0.4, text: tierAfter >= 4 ? 'MAX SPEED!' : 'SPEED UP!', color: '#ff5ea8', t: 0, big: true });
+        beep(440, 0.25, 'sawtooth', 0.08, 440);
+      }
       updateHud(true);
       return;
     }
