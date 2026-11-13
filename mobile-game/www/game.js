@@ -81,6 +81,7 @@
 
   // ── Game state ────────────────────────────────────────────
   const FLY_SPEED = 560;
+  const CAPTURE_SCALE = 1.5;     // pickup range as a multiple of the orbit radius
   let state = 'menu';          // menu | play | dying | over
   let planets = [], coins = [], particles = [], floaters = [], trail = [];
   let player, camY = 0, score = 0, runCoins = 0, combo = 0, shake = 0, revived = false;
@@ -156,7 +157,7 @@
       if (player.mode === 'orbit') {
         const p = player.planet;
         player.angle += Math.abs(p.spd) * player.dir * dt;
-        player.r = lerp(player.r, p.orbitR, Math.min(1, dt * 10));
+        player.r = lerp(player.r, p.orbitR, Math.min(1, dt * 6));
         player.x = p.x + Math.cos(player.angle) * player.r;
         player.y = p.y + Math.sin(player.angle) * player.r;
       } else {
@@ -218,7 +219,7 @@
       if (p === cur || p.idx < cur.idx || p.idx > cur.idx + 3) continue;
       const rx = player.x - p.x, ry = player.y - p.y;
       const dist = Math.hypot(rx, ry);
-      if (dist > p.orbitR) continue;
+      if (dist > p.orbitR * CAPTURE_SCALE) continue;
 
       // Captured!
       const cross = rx * player.vy - ry * player.vx;
@@ -292,6 +293,9 @@
     const cur = player && player.planet;
     for (const p of planets) {
       const isNext = cur && p.idx === cur.idx + 1;
+      // pickup zone
+      ctx.fillStyle = `hsla(${p.hue},90%,65%,${isNext ? 0.07 : 0.03})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.orbitR * CAPTURE_SCALE, 0, TAU); ctx.fill();
       // orbit ring
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.orbitR + p.pulse * 10, 0, TAU);
